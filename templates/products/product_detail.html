@@ -1,0 +1,28 @@
+<!-- product_detail.html -->
+<h1>{{ product.title }}</h1>
+<p>{{ product.description }}</p>
+<p>Price: ${{ product.price }}</p>
+
+<!-- Show the images (array of images) -->
+{% if product.images %}
+    <img src="{{ product.images.url }}" alt="{{ product.title }}">
+{% endif %}
+
+<!-- YouTube video -->
+{% if product.youtube_url %}
+    <iframe width="560" height="315" src="{{ product.youtube_url }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+{% endif %}
+
+<!-- Display Likes -->
+<p>Likes: {{ product.likes.count }}</p>
+
+<!-- Like/Unlike Button -->
+{% if user.is_authenticated %}
+    {% if product.likes.filter(id=user.id).exists %}
+        <a href="{% url 'like_product' product.id %}">Unlike</a>
+    {% else %}
+        <a href="{% url 'like_product' product.id %}">Like</a>
+    {% endif %}
+{% else %}
+    <p>You must be logged in to like this product.</p>
+{% endif %}

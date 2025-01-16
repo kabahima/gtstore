@@ -1,0 +1,60 @@
+<!-- product_list.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Product List</h1>
+
+  <!-- Category Filter Form -->
+  <form method="get" action="">
+    <label for="category">Filter by Category:</label>
+    <select name="category" id="category">
+      <option value="">All Categories</option>
+      {% for category in categories %}
+        <option value="{{ category.name }}" {% if category.name == selected_category %}selected{% endif %}>{{ category.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+  </form>
+
+  <!-- Product List -->
+  <div class="product-list">
+    {% for product in page_obj %}
+      <div class="product-item">
+        <a href="{% url 'product_detail' product.id %}">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          <h2>{{ product.name }}</h2>
+        </a>
+        <p>{{ product.description|truncatewords:20 }}</p>
+        <p>${{ product.price }}</p>
+        <a href="{% url 'like_product' product.id %}">
+          {% if request.user in product.likes.all %}
+            <button>Unlike</button>
+          {% else %}
+            <button>Like</button>
+          {% endif %}
+        </a>
+      </div>
+    {% empty %}
+      <p>No products found.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <span class="step-links">
+      {% if page_obj.has_previous %}
+        <a href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}">previous</a>
+      {% endif %}
+
+      <span class="current">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+      </span>
+
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}">last &raquo;</a>
+      {% endif %}
+    </span>
+  </div>
+{% endblock %}
