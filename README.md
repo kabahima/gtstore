@@ -1,0 +1,1 @@
+An e-commerce web application designed for a modern furniture and home goods store. This platform allows customers to browse, search, and purchase a wide range of stylish furniture, home decor, and household essentials. Features include a responsive design, product filtering, a shopping cart, and a secure checkout process
