@@ -18,6 +18,10 @@
       {
           "src": "/static/(.*)",
           "dest": "core/static/$1"	
+      },
+      {
+        "src": "/static/(.*)",
+        "dest": "/staticfiles/$1"
       }
   ]
 }
