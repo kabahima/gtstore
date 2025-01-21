@@ -12,6 +12,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '.vercel.app',
+    '127.0.0.1',	
 
 ]
 
@@ -61,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.app'
 
 
 # Database
@@ -78,7 +79,12 @@ DATABASES = {
         }
     }
 
-
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
