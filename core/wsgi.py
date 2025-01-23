@@ -1,24 +1,13 @@
-"""
-WSGI config for core project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
-"""
-
 import os
-
 from django.core.wsgi import get_wsgi_application
 from whitenoise import WhiteNoise
 
+from core.settings import BASE_DIR
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 app = get_wsgi_application()
-application = WhiteNoise(app, root=os.path.join(BASE_DIR, 'staticfiles'))
 
+app = WhiteNoise(app, root=os.path.join(BASE_DIR, 'staticfiles'))
 
-
+app.add_files(os.path.join(BASE_DIR, 'static'), prefix='static/')
