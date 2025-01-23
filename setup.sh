@@ -10,7 +10,8 @@ pip install -r requirements.txt
 echo "Running Django commands"
 python manage.py makemigrations
 python manage.py migrate
-python manage.py collectstatic
+python manage.py collectstatic --noinput
+
 
 # install tailwind dependencies
 echo "Installing tailwind dependencies"
