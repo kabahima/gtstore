@@ -5,9 +5,8 @@
         "memory": 512,
         "maxDuration": 60,
         "includeFiles": "core/static/**",
-        "runtime": "python3.12",  
-        "handler": "core/wsgi.py",  
-        "maxLambdaSize": "15mb" 
+        "runtime": "python3.12",
+        "maxLambdaSize": "15mb"
       },
       "core/static/**": { 
           "memory": 128,
