@@ -1,27 +1,23 @@
 {
     "version": 2,
-    "functions": {
-      "core/wsgi.py": {
-        "memory": 512,
-        "maxDuration": 60,
-        "includeFiles": "core/static/**",
-        "runtime": "python3.12",
-        "maxLambdaSize": "15mb"
-      },
-      "core/static/**": { 
-          "memory": 128,
-          "maxDuration": 10,
-          "type": "static"
-      }
-    },
+    "builds": [
+        {
+            "src": "core/wsgi.py",
+            "use": "@vercel/python",
+            "config": { "maxLambdaSize": "15mb",
+            "runtime": "python3.12", 
+            "buildCommand": "bash setup.sh"
+         }
+        }
+    ],
     "routes": [
-      {
-        "src": "/static/(.*)",
-        "dest": "/core/static/$1"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "core/wsgi.py"
-      }
+        {
+            "src": "/(.*)",
+            "dest": "core/wsgi.py"
+        },
+        {
+            "src": "/static/(.*)",
+            "dest": "core/static/$1"	
+        }
     ]
   }
