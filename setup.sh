@@ -1,26 +1,20 @@
 #!/bin/bash
-#  install dependencies 
-echo "Installing dependencies"	
 
-pip install setuptools
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+# Install dependencies
+echo "Installing dependencies"
+
 pip install -r requirements.txt
-pip install whitenoise
-pip install django-widget-tweaks
 
-
-
-# Run django commands 
+# Run Django commands
 echo "Running Django commands"
 python manage.py makemigrations
 python manage.py migrate
 
-# install tailwind dependencies
-echo "Installing tailwind dependencies"
-# python manage.py tailwind install
-# python manage.py tailwind start
-# Run the server
-echo "Running the server"
-# python manage.py collectstatic
+# Collect static files
+echo "Collecting static files"
 python manage.py collectstatic --noinput
 
-python manage.py runserver
+echo "Setup complete."
