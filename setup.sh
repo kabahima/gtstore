@@ -5,6 +5,7 @@ echo "Installing dependencies"
 pip install setuptools
 pip install -r requirements.txt
 pip install whitenoise
+pip install django-widget-tweaks
 
 
 
