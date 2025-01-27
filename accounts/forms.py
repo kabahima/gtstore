@@ -23,7 +23,7 @@ class LoginForm(AuthenticationForm):
 class RegisterForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ['email', 'phone_number', 'is_whatsapp_same_as_phone']
+        fields = ['email', 'phone_number',  'password', 'is_whatsapp_same_as_phone']
 
     def save(self, commit=True):
         user = super().save(commit=False)

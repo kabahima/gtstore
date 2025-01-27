@@ -46,11 +46,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'  # Superusers login with email
-    REQUIRED_FIELDS = ['phone_number']
+    USERNAME_FIELD = 'email'  
+    REQUIRED_FIELDS = ['phone_number', 'password']
 
     def save(self, *args, **kwargs):
-        # If the user selects 'is_whatsapp_same_as_phone', make whatsapp_number the same as phone_number
         if self.is_whatsapp_same_as_phone and self.phone_number:
             self.whatsapp_number = self.phone_number
         super().save(*args, **kwargs)

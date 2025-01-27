@@ -5,7 +5,6 @@ from django.utils.text import slugify
 from django.conf import settings
 
 
-
 class ProductCategory(models.Model):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
@@ -27,7 +26,6 @@ class ProductCategory(models.Model):
         verbose_name_plural = "Categories"
 
 
-
 class Product(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -35,7 +33,7 @@ class Product(models.Model):
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
     images = models.ImageField(upload_to='products/', null=True, blank=True)
     youtube_url = models.URLField(max_length=200, null=True, blank=True)
-    likes = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="liked_products")  # Updated field
     slug = models.SlugField(unique=True, blank=True)  # Slug for URL
 
     def save(self, *args, **kwargs):

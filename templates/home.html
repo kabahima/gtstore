@@ -12,9 +12,10 @@
                       {% block hero_text %}Explore our unique collections for a comfortable home.{% endblock %}
                   </p>
                   <div class="buttons button-spacing">
-                    <button class="btn btn-primary ml-2">Shop Now</button>
-                    <button class="btn btn-secondary ml-4">Explore</button>
-                  </div>
+                    <a href="{% url 'product_list' %}" class="btn btn-primary ml-2">Shop Now</a>
+                    <a href="{% url 'category_list' %}" class="btn btn-secondary ml-4">Explore</a>
+                </div>
+                
               </div>
               <div class="col-md-6">
                   <div class="slider-container">
