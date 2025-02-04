@@ -1,4 +1,3 @@
-# views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -8,12 +7,10 @@ def category_list(request):
     categories = ProductCategory.objects.all()
     return render(request, 'products/category_list.html', {'categories': categories})
 
-
 def product_detail(request, product_id):
     """View for displaying product details."""
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'products/product_detail.html', {'product': product})
-
 
 def product_list(request):
     """View for listing products with category filtering and pagination."""
@@ -35,7 +32,6 @@ def product_list(request):
         'categories': categories,
         'selected_category': category_filter,
     })
-
 
 @login_required
 def like_product(request, product_id):

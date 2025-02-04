@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 import os
+import cloudinary
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -66,26 +67,44 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.app'
 
-# Database configuration (PostgreSQL)
+
+# use DEV_DATABASE to differentiate between dev and prod
+# if config('DEV_DATABASE', default='sqlite') == 'postgresql':
+    # Production database settings (PostgreSQL)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('DB_NAME'),
+            'USER': config('DB_USER'),
+            'PASSWORD': config('DB_PASSWORD'),
+            'HOST': config('DB_HOST'),
+            'PORT': config('DB_PORT', default=5432, cast=int),
+        }
     }
-}
+# else:
+    # Development database settings (SQLite)
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     }
+    # }
+
 
 # =========================
 # Cloudinary Configuration
 # =========================
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": config("CLOUDINARY_API_KEY"),
-    "API_SECRET": config("CLOUDINARY_API_SECRET"),
-}
+# Cloudinary settings
+
+cloudinary.config( 
+
+    cloud_name= "ddubcf1rj",
+    api_key="491932619944567",
+    api_secret = "40ggngUkbSw-T9-nkW_aDVNLi3E",
+    secure=True
+)
+   
+
 
 # Set Cloudinary to handle media file storage
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
@@ -94,20 +113,15 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # ===================================
 STATIC_URL = '/static/'
 
-# Directory for collected static files
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-# Add static files dirs if needed
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / "static",  # Ensure this is pointing to the correct static folder for development
 ]
 
-# Use WhiteNoise for serving static files in production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Only for use in production when running collectstatic
 
-# Media files (uploads) with Cloudinary
+
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'  
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
