@@ -1,11 +1,11 @@
 from django.urls import path
-from . import views
+from .views import add_to_cart, view_cart, remove_from_cart, checkout
 
-app_name = 'cart'  # Ensure this line exists
+app_name = 'cart'  # Add this to namespace URLs correctly
 
 urlpatterns = [
-    path('add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
-    path('view/', views.view_cart, name='view_cart'),  # Ensure 'view_cart' exists
-    path('remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
-    path('checkout/', views.checkout, name='checkout'),
+    path('add/<int:product_id>/', add_to_cart, name='add_to_cart'),
+    path('view/', view_cart, name='view_cart'),
+    path('remove/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
+    path('checkout/', checkout, name='checkout'),  # Ensure checkout URL is here
 ]
