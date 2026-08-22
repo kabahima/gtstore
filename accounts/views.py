@@ -1,12 +1,28 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator
 from .forms import RegisterForm, SuperUserRegisterForm, LoginForm
 from .models import CustomUser
+from products.models import Product, ProductCategory
 
 
 def home_view(request):
-    return render(request, "home.html")
+    featured_products = Product.objects.select_related('category').order_by('-id')[:4]
+    categories = ProductCategory.objects.filter(is_active=True)
+
+    liked_product_ids = set()
+    if request.user.is_authenticated:
+        liked_product_ids = set(
+            request.user.liked_products.values_list('id', flat=True)
+        )
+
+    return render(request, "home.html", {
+        "featured_products": featured_products,
+        "categories": categories,
+        "liked_product_ids": liked_product_ids,
+    })
 
 
 def register_view(request):
@@ -52,16 +68,12 @@ def login_view(request):
             identifier = form.cleaned_data['username']
             password = form.cleaned_data['password']
 
-            # Authenticate using email or phone number
-            user = CustomUser.objects.filter(email=identifier).first() or CustomUser.objects.filter(phone_number=identifier).first()
-            
+            user = authenticate(request, username=identifier, password=password)
             if user:
-                user = authenticate(request, username=user.email, password=password)
-                if user:
-                    login(request, user)
-                    messages.success(request, "Login successful!")
-                    return redirect('home')
-            
+                login(request, user)
+                messages.success(request, "Login successful!")
+                return redirect('home')
+
             messages.error(request, "Invalid email/phone or password.")
 
     else:

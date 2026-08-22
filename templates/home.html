@@ -1,35 +1,146 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% endblock %}
- {% block hero %}
-   <section class="hero-section">
-      <div class="container-fluid hero-content">
-        <div class="row">
-              <div class="col-md-6">
-                  <h1>{% block hero_title %}Welcome to GT Furniture{% endblock %}</h1>
-                  <p>
-                      {% block hero_text %}Explore our unique collections for a comfortable home.{% endblock %}
-                  </p>
-                  <div class="buttons button-spacing">
-                    <a href="{% url 'product_list' %}" class="btn btn-primary ml-2">Shop Now</a>
-                    <a href="{% url 'category_list' %}" class="btn btn-secondary ml-4">Explore</a>
+{% block title %}GT Furniture | Modern Living{% endblock %}
+
+{% block hero %}
+<main class="retail-home">
+    <div class="container-fluid retail-content">
+        <div class="promo-grid">
+            <section class="promo-panel promo-featured">
+                <div class="promo-copy">
+                    <span class="promo-kicker">Comfort, craft & character</span>
+                    <h1>Furniture for the way you live.</h1>
+                    <p>Thoughtful pieces for relaxed rooms, everyday rituals, and homes with personality.</p>
+                    <a href="{% url 'product_list' %}" class="promo-link">Shop the collection <i class="fas fa-arrow-right"></i></a>
                 </div>
-                
-              </div>
-              <div class="col-md-6">
-                  <div class="slider-container">
-                      <div class="slider">
-                          <img src="https://res.cloudinary.com/ddubcf1rj/image/upload/v1737656440/slide1_pxe4dn.png" alt="Sofa 1" class="slide">
-                          <img src="https://res.cloudinary.com/ddubcf1rj/image/upload/v1737656439/sofa_zfg46w.png" alt="Sofa 2" class="slide">
-                          <img src="https://res.cloudinary.com/ddubcf1rj/image/upload/v1737656432/couch_affxse.png" alt="Sofa 3" class="slide">
-                      </div>
-                      <button class="slider-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
-                      <button class="slider-btn next-btn"><i class="fas fa-chevron-right"></i></button>
-                   </div>
-               </div>
-          </div>
-      </div>
-  </section>
+                <img src="{% static 'images/slide1.png' %}" alt="Featured modern furniture" class="promo-image">
+            </section>
+
+            <div class="promo-stack">
+                <section class="promo-panel promo-blue">
+                    <div>
+                        <span class="promo-kicker">Made for home</span>
+                        <h2>Room to feel good in.</h2>
+                        <a href="{% url 'category_list' %}" class="promo-link">Explore categories <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                    <img src="{% static 'images/sofa.png' %}" alt="Comfortable sofa" class="promo-cutout">
+                </section>
+                <div class="promo-pair">
+                    <section class="promo-panel promo-gold">
+                        <span class="promo-kicker">Fresh arrivals</span>
+                        <h2>New pieces<br>for every room.</h2>
+                        <a href="{% url 'product_list' %}" class="promo-link">Shop now <i class="fas fa-arrow-right"></i></a>
+                    </section>
+                    <section class="promo-panel promo-neutral">
+                        <span class="promo-kicker">Simple living</span>
+                        <h2>Make space<br>for more.</h2>
+                        <a href="{% url 'category_list' %}" class="promo-link">See collections <i class="fas fa-arrow-right"></i></a>
+                        <img src="{% static 'images/couch.png' %}" alt="Modern couch" class="promo-corner-image">
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<section class="hero-section">
+    <div class="container hero-content">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-copy">
+                    <span class="eyebrow">Curated home essentials</span>
+                    <h1>Comfort, craft, and character for every room.</h1>
+                    <p>
+                        Discover beautifully designed furniture and finishing touches that make home living feel effortless.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{% url 'product_list' %}" class="btn btn-primary">Shop collection</a>
+                        <a href="{% url 'category_list' %}" class="btn btn-secondary">Browse categories</a>
+                    </div>
+                    <div class="hero-metrics">
+                        <div>
+                            <strong>500+</strong>
+                            <span>Home pieces</span>
+                        </div>
+                        <div>
+                            <strong>48h</strong>
+                            <span>Fast delivery</span>
+                        </div>
+                        <div>
+                            <strong>4.9/5</strong>
+                            <span>Customer love</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="slider-container">
+                    <div class="slider">
+                        <img src="https://res.cloudinary.com/ddubcf1rj/image/upload/v1737656440/slide1_pxe4dn.png" alt="Modern sofa" class="slide" width="1920" height="480">
+                        <img src="https://res.cloudinary.com/ddubcf1rj/image/upload/v1737656439/sofa_zfg46w.png" alt="Elegant furniture" class="slide" width="1920" height="480">
+                        <img src="https://res.cloudinary.com/ddubcf1rj/image/upload/v1737656432/couch_affxse.png" alt="Comfortable couch" class="slide" width="1920" height="480">
+                    </div>
+                    <button class="slider-btn prev-btn" type="button" aria-label="Previous slide"><i class="fas fa-chevron-left"></i></button>
+                    <button class="slider-btn next-btn" type="button" aria-label="Next slide"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
 
+{% block content %}
+<section class="category-shell">
+    <div class="category-hero">
+        <div class="category-hero-copy">
+            <p class="section-kicker">Curated styles</p>
+            <h1 class="section-title">Shop by collection</h1>
+            <p class="category-hero-text">Explore refined furniture and home essentials designed to bring warmth, texture, and timeless comfort to every room.</p>
+        </div>
+        <div class="category-hero-side">
+            <div class="mini-stat">
+                <span>Collections</span>
+                <strong>{{ categories|length }}</strong>
+            </div>
+            <div class="mini-stat accent-stat">
+                <span>Design focus</span>
+                <strong>Modern living</strong>
+            </div>
+        </div>
+    </div>
+
+    {% if categories %}
+    <div class="row g-4 category-grid">
+        {% for category in categories %}
+        <div class="col-md-6 col-xl-4">
+            <article class="category-card">
+                {% if category.image %}
+                <img src="{{ category.image.url }}" class="category-image" alt="{{ category.name }}">
+                {% else %}
+                <div class="category-image placeholder-category">Collection</div>
+                {% endif %}
+
+                <div class="category-body">
+                    <div class="category-label">Featured</div>
+                    <h2>{{ category.name }}</h2>
+                    <p>{{ category.description|default:"Discover timeless pieces that elevate everyday living." }}</p>
+
+                    <div class="category-card-footer">
+                        <span class="category-note">Explore pieces</span>
+                        <a href="{% url 'product_list' %}?category={{ category.slug }}" class="btn btn-primary btn-small">View products</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No categories available right now.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

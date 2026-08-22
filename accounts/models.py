@@ -3,6 +3,12 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
+    def get_by_natural_key(self, username):
+        if '@' in username:
+            username = username.strip()
+            return self.get(email__iexact=username)
+        return self.get(phone_number=username)
+
     def create_user(self, email=None, phone_number=None, password=None, whatsapp_number=None, **extra_fields):
         if not email and not phone_number:
             raise ValueError("Either Email or Phone Number must be set")
@@ -13,11 +19,13 @@ class CustomUserManager(BaseUserManager):
             raise ValueError("Superusers must have a WhatsApp number")
 
         user = self.model(
-            email=email, 
-            phone_number=phone_number, 
-            whatsapp_number=whatsapp_number, 
+            email=email,
+            phone_number=phone_number,
+            whatsapp_number=whatsapp_number,
             **extra_fields
         )
+        if password is None:
+            raise ValueError("Password must be set")
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -27,10 +35,10 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
 
         return self.create_user(
-            email=email, 
-            phone_number=phone_number, 
-            password=password, 
-            whatsapp_number=whatsapp_number, 
+            email=email,
+            phone_number=phone_number,
+            password=password,
+            whatsapp_number=whatsapp_number,
             **extra_fields
         )
 

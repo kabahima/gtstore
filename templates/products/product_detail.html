@@ -1,28 +1,60 @@
-<!-- product_detail.html -->
-<h1>{{ product.title }}</h1>
-<p>{{ product.description }}</p>
-<p>Price: ${{ product.price }}</p>
+{% extends 'base.html' %}
 
-<!-- Show the images (array of images) -->
-{% if product.images %}
-    <img src="{{ product.images.url }}" alt="{{ product.title }}">
-{% endif %}
+{% block content %}
+<section class="product-detail-shell">
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-7">
+            <div class="product-detail-gallery">
+                {% if product.images %}
+                    <img src="{{ product.images.url }}" alt="{{ product.title }}" class="main-product-image">
+                {% else %}
+                    <div class="placeholder-image main-placeholder">No image available</div>
+                {% endif %}
+            </div>
+        </div>
 
-<!-- YouTube video -->
-{% if product.youtube_url %}
-    <iframe width="560" height="315" src="{{ product.youtube_url }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-{% endif %}
+        <div class="col-lg-5">
+            <div class="product-detail-card">
+                <p class="section-kicker">{{ product.category.name }}</p>
+                <h1 class="section-title product-title">{{ product.title }}</h1>
+                <div class="detail-price-row">
+                    <span class="product-price detail-price">UGX {{ product.price }}</span>
+                    <span class="like-count"><i class="fas fa-heart"></i> {{ product.likes.count }}</span>
+                </div>
 
-<!-- Display Likes -->
-<p>Likes: {{ product.likes.count }}</p>
+                <p class="product-description">{{ product.description }}</p>
 
-<!-- Like/Unlike Button -->
-{% if user.is_authenticated %}
-    {% if product.likes.filter(id=user.id).exists %}
-        <a href="{% url 'like_product' product.id %}">Unlike</a>
-    {% else %}
-        <a href="{% url 'like_product' product.id %}">Like</a>
+                <form action="{% url 'cart:add_to_cart' product.id %}" method="POST" class="detail-cart-form">
+                    {% csrf_token %}
+                    <label for="quantity">Quantity</label>
+                    <div class="quantity-row">
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="100">
+                        <button type="submit" class="btn btn-primary">Add to cart</button>
+                    </div>
+                </form>
+
+                <div class="like-action-row">
+                    {% if user.is_authenticated %}
+                        {% if is_liked %}
+                            <a href="{% url 'like_product' product.id %}" class="btn btn-light"><i class="fas fa-heart"></i> Unlike</a>
+                        {% else %}
+                            <a href="{% url 'like_product' product.id %}" class="btn btn-light"><i class="far fa-heart"></i> Like</a>
+                        {% endif %}
+                    {% else %}
+                        <p class="login-prompt">Please <a href="{% url 'login' %}">log in</a> to like this product.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if product.youtube_url %}
+    <div class="video-wrapper mt-5">
+        <h2>Product walkthrough</h2>
+        <div class="ratio ratio-16x9">
+            <iframe src="{{ product.youtube_url }}" title="{{ product.title }}" allowfullscreen></iframe>
+        </div>
+    </div>
     {% endif %}
-{% else %}
-    <p>You must be logged in to like this product.</p>
-{% endif %}
+</section>
+{% endblock %}

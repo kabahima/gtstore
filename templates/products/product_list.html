@@ -1,69 +1,575 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block title %}Shop | GT Furniture{% endblock %}
+
+
+{% block hero %}
+<section class="shop-hero">
+    <div class="container">
+
+        <nav class="breadcrumb mb-3" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <span aria-current="page">Shop</span>
+        </nav>
+
+        <div class="row align-items-end">
+            <div class="col-lg-8">
+                <span class="section-kicker">Our collection</span>
+                <h1 class="shop-hero-title">Furniture for every space.</h1>
+                <p class="shop-hero-text">
+                    Discover comfortable, stylish and thoughtfully selected
+                    furniture designed to make your home feel complete.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <a href="#products" class="btn btn-primary">
+                    Shop collection
+                    <i class="fas fa-arrow-down ms-2" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+
 {% block content %}
-  <h1>Product List</h1>
 
-  <!-- Category Filter Form -->
-  <form method="get" action="">
-    <label for="category">Filter by Category:</label>
-    <select name="category" id="category">
-      <option value="">All Categories</option>
-      {% for category in categories %}
-        <option value="{{ category.name }}" {% if category.name == selected_category %}selected{% endif %}>{{ category.name }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit">Filter</button>
-  </form>
+<section class="shop-section" id="products">
 
-  <!-- Product List -->
-  <div class="product-list">
-    {% for product in page_obj %}
-      <div class="product-item">
-        <a href="{% url 'product_detail' product.id %}">
-          <img src="{{ product.image.url }}" alt="{{ product.name }}">
-          <h2>{{ product.name }}</h2>
-        </a>
-        <p>{{ product.description|truncatewords:20 }}</p>
-        <p>${{ product.price }}</p>
-        
-        <!-- Like Button -->
-        <a href="{% url 'like_product' product.id %}">
-          {% if request.user in product.likes.all %}
-            <button>Unlike</button>
-          {% else %}
-            <button>Like</button>
-          {% endif %}
-        </a>
+    <div class="container">
 
-        <!-- Add to Cart Form (Fixed) -->
-        <form action="{% url 'cart:add_to_cart' product.id %}" method="POST">
-          {% csrf_token %}
-          <label for="quantity-{{ product.id }}">Quantity:</label>
-          <input type="number" id="quantity-{{ product.id }}" name="quantity" value="1" min="1" max="100">
-          <button type="submit">Add to Cart</button>
-        </form>
-      </div>
-    {% empty %}
-      <p>No products found.</p>
-    {% endfor %}
-  </div>
+        <!-- TOP SHOP BAR -->
+        <div class="shop-topbar">
 
-  <!-- Pagination -->
-  <div class="pagination">
-    <span class="step-links">
-      {% if page_obj.has_previous %}
-        <a href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}">&laquo; first</a>
-        <a href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}">previous</a>
-      {% endif %}
+            <div class="shop-results-info">
 
-      <span class="current">
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-      </span>
+                {% if search_query %}
 
-      {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}">next</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}">last &raquo;</a>
-      {% endif %}
-    </span>
-  </div>
+                    <p class="section-kicker mb-1">
+                        Search results
+                    </p>
+
+                    <h2>
+                        Results for
+                        <span>"{{ search_query }}"</span>
+                    </h2>
+
+                {% elif selected_category %}
+
+                    <p class="section-kicker mb-1">
+                        Category
+                    </p>
+
+                    <h2>
+                        {{ selected_category|title }}
+                    </h2>
+
+                {% else %}
+
+                    <p class="section-kicker mb-1">
+                        Explore our collection
+                    </p>
+
+                    <h2>
+                        Shop furniture
+                    </h2>
+
+                {% endif %}
+
+                <p class="product-count">
+                    {{ page_obj.paginator.count }}
+                    product{{ page_obj.paginator.count|pluralize }} available
+                </p>
+
+            </div>
+
+
+            <!-- MOBILE FILTER BUTTON -->
+            <button
+                class="btn btn-outline-primary d-lg-none"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#shopFilters"
+                aria-label="Open filters"
+            >
+                <i class="fas fa-sliders-h me-2" aria-hidden="true"></i>
+                Filters
+            </button>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- =========================
+                 DESKTOP SIDEBAR
+            ========================== -->
+            <aside class="col-lg-3 d-none d-lg-block">
+
+                <div class="shop-sidebar">
+
+                    <div class="sidebar-header">
+                        <h4>Filters</h4>
+
+                        {% if search_query or selected_category %}
+                            <a
+                                href="{% url 'product_list' %}"
+                                class="clear-all"
+                            >
+                                Clear all
+                            </a>
+                        {% endif %}
+                    </div>
+
+
+                    <!-- CATEGORY FILTER -->
+                    <div class="filter-section">
+
+                        <h5>
+                            Categories
+                        </h5>
+
+                        {% if search_query %}
+                            <input
+                                type="hidden"
+                                name="q"
+                                value="{{ search_query }}"
+                            >
+                        {% endif %}
+
+
+                        <a
+                            href="{% url 'product_list' %}"
+                            class="category-filter {% if not selected_category %}active{% endif %}"
+                        >
+                            <span>All products</span>
+                        </a>
+
+                        {% include 'partials/category_filters.html' with show_icon=True %}
+
+                    </div>
+
+
+                    <!-- SHOP HELP -->
+                    <div class="sidebar-help">
+
+                        <div class="sidebar-help-icon">
+                            <i class="fas fa-headset" aria-hidden="true"></i>
+                        </div>
+
+                        <h5>Need help?</h5>
+
+                        <p>
+                            Our team is here to help you choose the right
+                            furniture for your home.
+                        </p>
+
+                        <a href="#" class="help-link">
+                            Contact us
+                            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =========================
+                 PRODUCTS AREA
+            ========================== -->
+            <div class="col-lg-9">
+
+
+                <!-- PRODUCT TOOLBAR -->
+                <div class="products-toolbar">
+
+                    <div class="toolbar-left">
+
+                        {% if search_query or selected_category %}
+
+                            <span class="toolbar-label">
+                                Active filters:
+                            </span>
+
+                            {% if search_query %}
+                                <span class="filter-tag">
+                                    {{ search_query }}
+                                </span>
+                            {% endif %}
+
+                            {% if selected_category %}
+                                <span class="filter-tag">
+                                    {{ selected_category|title }}
+                                </span>
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="toolbar-right">
+
+                        <span class="view-label">
+                            View
+                        </span>
+
+                        <button class="view-toggle active" type="button" aria-label="Grid view">
+                            <i class="fas fa-th-large" aria-hidden="true"></i>
+                        </button>
+
+                        <button class="view-toggle" type="button" aria-label="List view">
+                            <i class="fas fa-list" aria-hidden="true"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     PRODUCT GRID
+                ========================== -->
+                <div class="row g-4 product-row">
+
+                    {% for product in page_obj %}
+
+                    <div class="col-6 col-md-6 col-xl-4">
+
+                        <article class="product-card ecommerce-card">
+
+                            <!-- PRODUCT IMAGE -->
+                            <div class="product-image-wrapper">
+
+                                <a
+                                    href="{% url 'product_detail' product.id %}"
+                                    class="product-image-link"
+                                >
+
+                                    {% if product.images %}
+
+                                        <img
+                                            src="{{ product.images.url }}"
+                                            alt="{{ product.title }}"
+                                            class="product-image"
+                                            loading="lazy"
+                                            width="400"
+                                            height="400"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="product-image placeholder-image">
+                                            <i class="fas fa-couch" aria-hidden="true"></i>
+                                        </div>
+
+                                    {% endif %}
+
+                                </a>
+
+
+                                <!-- CATEGORY BADGE -->
+                                {% if product.category %}
+                                <span class="product-badge">
+                                    {{ product.category.name }}
+                                </span>
+                                {% endif %}
+
+
+                                <!-- WISHLIST -->
+                                <a
+                                    href="{% url 'like_product' product.id %}"
+                                    class="wishlist-btn {% if product.id in liked_product_ids %}active{% endif %}"
+                                    aria-label="{% if product.id in liked_product_ids %}Remove{% else %}Add{% endif %} {{ product.title }} to wishlist"
+                                >
+
+                                    {% if product.id in liked_product_ids %}
+
+                                        <i class="fas fa-heart" aria-hidden="true"></i>
+
+                                    {% else %}
+
+                                        <i class="far fa-heart" aria-hidden="true"></i>
+
+                                    {% endif %}
+
+                                </a>
+
+
+                                <!-- QUICK ACTIONS -->
+                                <div class="product-overlay-actions">
+
+                                    <a
+                                        href="{% url 'product_detail' product.id %}"
+                                        class="quick-action"
+                                        aria-label="Quick view {{ product.title }}"
+                                    >
+                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                    </a>
+
+                                    <form
+                                        action="{% url 'cart:add_to_cart' product.id %}"
+                                        method="POST"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <input
+                                            type="hidden"
+                                            name="quantity"
+                                            value="1"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="quick-action"
+                                            aria-label="Add {{ product.title }} to cart"
+                                        >
+                                            <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PRODUCT DETAILS -->
+                            <div class="product-body">
+
+                                <div class="product-category">
+                                    {{ product.category.name }}
+                                </div>
+
+
+                                <h3 class="product-title">
+
+                                    <a href="{% url 'product_detail' product.id %}">
+                                        {{ product.title|truncatewords:6 }}
+                                    </a>
+
+                                </h3>
+
+
+                                <p class="product-description">
+                                    {{ product.description|truncatewords:10 }}
+                                </p>
+
+
+                                <div class="product-price">
+                                    UGX {{ product.price|floatformat:0 }}
+                                </div>
+
+
+                                <!-- ADD TO CART -->
+                                <form
+                                    action="{% url 'cart:add_to_cart' product.id %}"
+                                    method="POST"
+                                    class="product-cart-form"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <input
+                                        type="hidden"
+                                        name="quantity"
+                                        value="1"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="product-add-btn"
+                                    >
+                                        <i class="fas fa-shopping-cart" aria-hidden="true"></i>
+
+                                        <span>Add to cart</span>
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="col-12">
+
+                        <div class="empty-state">
+
+                            <div class="empty-state-icon">
+                                <i class="fas fa-box-open" aria-hidden="true"></i>
+                            </div>
+
+                            {% if search_query %}
+
+                                <h2>No products found</h2>
+
+                                <p>
+                                    We couldn't find any products matching
+                                    "{{ search_query }}".
+                                </p>
+
+                            {% elif selected_category %}
+
+                                <h2>No products found</h2>
+
+                                <p>
+                                    There are no products in this category yet.
+                                </p>
+
+                            {% else %}
+
+                                <h2>No products available</h2>
+
+                                <p>
+                                    Our collection is currently being updated.
+                                </p>
+
+                            {% endif %}
+
+                            <a
+                                href="{% url 'product_list' %}"
+                                class="btn btn-primary mt-3"
+                            >
+                                Browse all products
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- =========================
+                     PAGINATION
+                ========================== -->
+                {% if page_obj.paginator.num_pages > 1 %}
+
+                <nav class="pagination-nav mt-5" aria-label="Product pagination">
+
+                    <div class="pagination-wrapper">
+
+                        {% if page_obj.has_previous %}
+
+                            <a
+                                href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                class="pagination-btn"
+                                aria-label="Previous page"
+                            >
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </a>
+
+                        {% else %}
+
+                            <span class="pagination-btn disabled" aria-disabled="true">
+                                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+                            </span>
+
+                        {% endif %}
+
+
+                        <span class="pagination-current">
+
+                            Page {{ page_obj.number }}
+
+                            <span>
+                                of {{ page_obj.paginator.num_pages }}
+                            </span>
+
+                        </span>
+
+
+                        {% if page_obj.has_next %}
+
+                            <a
+                                href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}"
+                                class="pagination-btn"
+                                aria-label="Next page"
+                            >
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </a>
+
+                        {% else %}
+
+                            <span class="pagination-btn disabled" aria-disabled="true">
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </nav>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     MOBILE FILTER OFFCANVAS
+========================= -->
+<div
+    class="offcanvas offcanvas-start"
+    tabindex="-1"
+    id="shopFilters"
+    aria-labelledby="shopFiltersLabel"
+>
+
+    <div class="offcanvas-header">
+
+        <h5 class="offcanvas-title" id="shopFiltersLabel">Filters</h5>
+
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close filters"
+        ></button>
+
+    </div>
+
+
+    <div class="offcanvas-body">
+
+        <div class="filter-section">
+
+            <h5>Categories</h5>
+
+            <a
+                href="{% url 'product_list' %}"
+                class="category-filter {% if not selected_category %}active{% endif %}"
+            >
+                <span>All products</span>
+            </a>
+
+            {% include 'partials/category_filters.html' with show_icon=False %}
+
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

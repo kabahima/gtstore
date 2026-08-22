@@ -5,18 +5,21 @@ import cloudinary
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-me')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Default for local development
+DEBUG = config('DEBUG', default=True, cast=bool)
 
 if os.getenv("VERCEL"):
-    DEBUG = False  # Disable DEBUG in production
+    DEBUG = False
 
-ALLOWED_HOSTS = [
-    '.vercel.app',
-    '127.0.0.1',    
-]
+default_hosts = ['127.0.0.1', 'localhost']
+if os.getenv('VERCEL'):
+    default_hosts.append('.vercel.app')
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default=','.join(default_hosts),
+    cast=lambda value: [host.strip() for host in value.split(',') if host.strip()],
+)
 
 # Application definition
 INSTALLED_APPS = [
@@ -68,27 +71,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.app'
 
 
-# use DEV_DATABASE to differentiate between dev and prod
-# if config('DEV_DATABASE', default='sqlite') == 'postgresql':
-    # Production database settings (PostgreSQL)
-DATABASES = {
+USE_SQLITE = config('USE_SQLITE', default=True, cast=bool)
+
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME'),
-            'USER': config('DB_USER'),
-            'PASSWORD': config('DB_PASSWORD'),
-            'HOST': config('DB_HOST'),
+            'NAME': config('DB_NAME', default='gtstore'),
+            'USER': config('DB_USER', default='postgres'),
+            'PASSWORD': config('DB_PASSWORD', default=''),
+            'HOST': config('DB_HOST', default='localhost'),
             'PORT': config('DB_PORT', default=5432, cast=int),
         }
     }
-# else:
-    # Development database settings (SQLite)
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.sqlite3',
-    #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    #     }
-    # }
 
 
 # =========================
@@ -96,18 +98,18 @@ DATABASES = {
 # =========================
 # Cloudinary settings
 
-cloudinary.config( 
-
-    cloud_name= "ddubcf1rj",
-    api_key="491932619944567",
-    api_secret = "40ggngUkbSw-T9-nkW_aDVNLi3E",
-    secure=True
+cloudinary.config(
+    cloud_name=config('CLOUDINARY_CLOUD_NAME', default='demo'),
+    api_key=config('CLOUDINARY_API_KEY', default='demo'),
+    api_secret=config('CLOUDINARY_API_SECRET', default='demo'),
+    secure=True,
 )
-   
 
-
-# Set Cloudinary to handle media file storage
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Set Cloudinary to handle media file storage when configured; fall back to local storage otherwise.
+if config('USE_CLOUDINARY', default=False, cast=bool):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 # Static files (CSS, JavaScript, Images)
 # ===================================
@@ -139,3 +141,6 @@ USE_TZ = True
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# WhatsApp Configuration
+WHATSAPP_ORDER_NUMBER = config('WHATSAPP_ORDER_NUMBER', default='')

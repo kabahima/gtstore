@@ -1,25 +1,55 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center">Product Categories</h2>
-    <div class="row mt-3">
-        {% for category in categories %}
-        <div class="col-md-4">
-            <div class="card mb-4">
-                {% if category.image %}
-                <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ category.name }}</h5>
-                    <p class="card-text">{{ category.description }}</p>
-                    <a href="{% url 'product_list' %}?category={{ category.name }}" class="btn btn-primary">View Products</a>
-                </div>
+<section class="category-shell">
+    <div class="category-hero">
+        <div class="category-hero-copy">
+            <p class="section-kicker">Curated styles</p>
+            <h1 class="section-title">Shop by collection</h1>
+            <p class="category-hero-text">Explore refined furniture and home essentials designed to bring warmth, texture, and timeless comfort to every room.</p>
+        </div>
+
+        <div class="category-hero-side">
+            <div class="mini-stat">
+                <span>Collections</span>
+                <strong>{{ categories|length }}</strong>
+            </div>
+            <div class="mini-stat accent-stat">
+                <span>Design focus</span>
+                <strong>Modern living</strong>
             </div>
         </div>
-        {% empty %}
-        <p class="text-center">No categories available.</p>
+    </div>
+
+    {% if categories %}
+    <div class="row g-4 category-grid">
+        {% for category in categories %}
+        <div class="col-md-6 col-xl-4">
+            <article class="category-card">
+                {% if category.image %}
+                <img src="{{ category.image.url }}" class="category-image" alt="{{ category.name }}">
+                {% else %}
+                <div class="category-image placeholder-category">Collection</div>
+                {% endif %}
+
+                <div class="category-body">
+                    <div class="category-label">Featured</div>
+                    <h2>{{ category.name }}</h2>
+                    <p>{{ category.description|default:"Discover timeless pieces that elevate everyday living." }}</p>
+
+                    <div class="category-card-footer">
+                        <span class="category-note">Explore pieces</span>
+                        <a href="{% url 'product_list' %}?category={{ category.slug }}" class="btn btn-primary btn-small">View products</a>
+                    </div>
+                </div>
+            </article>
+        </div>
         {% endfor %}
     </div>
-</div>
+    {% else %}
+    <div class="col-12">
+        <p class="empty-state">No categories available right now.</p>
+    </div>
+    {% endif %}
+</section>
 {% endblock %}
